@@ -2,7 +2,7 @@
   "name": "child-story-studio",
   "version": "1.0.0",
   "private": true,
-  "description": "儿童绘本故事 - 手绘描边动画 - 小红书竖屏 3:4",
+  "description": "儿童绘本故事视频创作框架：Remotion 流水线（3:4 竖屏，AI 插画+配音+防返工预检）",
   "scripts": {
     "dev": "remotion studio",
     "render": "remotion render",
@@ -24,5 +24,10 @@
   "devDependencies": {
     "@types/react": "19.0.0",
     "typescript": "5.7.3"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jywud/child_story_videos.git"
   }
 }

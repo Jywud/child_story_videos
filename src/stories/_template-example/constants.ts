@@ -1,4 +1,13 @@
-import type { Scene, Story, CoverSpec } from "../../lib/timeline";
+import type { Scene, Story } from "../../lib/timeline";
+
+/** 封面规格（从任一成品集复制此定义即可） */
+export type CoverSpec = {
+  id: string;
+  image: string;
+  title: string;
+  subLines: string[];
+  badge: string;
+};
 
 /**
  * 最小示例集：3 幕。复制本目录改成你的 slug 即可开新一集。
@@ -19,7 +28,7 @@ export const SCENES: Scene[] = [
     key: "s1-hook",            // 幕的唯一标识（种子用）
     image: `${A}/hook.jpg`,    // 图片路径 public/assets/_template-example/hook.jpg
     audio: `${A}/v1.mp3`,      // 配音路径（edge-tts 生成，见 scripts/gen_voice_voice.py）
-    voiceFrames: 150,          // 配音实测帧数（mutagen ceil+1，渲染前必须回填真实值）
+    voiceFrames: 46,          // 配音实测帧数（mutagen ceil+1，渲染前必须回填真实值）
     buffer: BUF,
     variant: "title",          // title=开场标题卡（主标+副标）
     title: "你的主标题",
@@ -30,7 +39,7 @@ export const SCENES: Scene[] = [
     key: "s2-story",
     image: `${A}/s2.jpg`,
     audio: `${A}/v2.mp3`,
-    voiceFrames: 180,
+    voiceFrames: 46,
     buffer: BUF,
     variant: "bottom",         // bottom=底部字幕条（≤2 行自动断行）
     text: "旁白文案写在这里，跟着配音节奏分段。",
@@ -41,7 +50,7 @@ export const SCENES: Scene[] = [
     key: "s3-moral",
     image: `${A}/s2.jpg`,      // 寓意卡可复用前面画面
     audio: `${A}/v3.mp3`,
-    voiceFrames: 160,
+    voiceFrames: 46,
     buffer: BUF,
     variant: "moral",          // moral=寓意卡（复用画面+大标题）
     title: "寓意一句话",

@@ -10,6 +10,7 @@ _gen/
 # 素材（图+配音）不入库——创作者自己生成
 public/assets/*
 !public/assets/_sfx/
+!public/assets/_template-example/
 
 # 已发布的 24 集分镜数据（内容不入库，框架才入库）
 src/stories/*

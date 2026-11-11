@@ -58,7 +58,9 @@ edge-tts `zh-CN-XiaoyiNeural`，rate -25%，pitch +8Hz。改 `scripts/gen_voice_
 
 ## 示例集
 
-`src/stories/_template-example/` 是一个 3 幕的最小示例，含完整三件套注释。
+`src/stories/_template-example/` 是一个 3 幕的最小示例，含完整三件套注释和占位图/静音配音——clone 后 `npx remotion studio` 即可预览。
+
+渲染入口：本仓库的 `src/Root.tsx` 未入库（它注册了私人内容）。clone 后把 `src/Root.example.tsx` 重命名为 `src/Root.tsx` 即可运行。
 
 ## 出图纪律（AI 插画质量的关键）
 
