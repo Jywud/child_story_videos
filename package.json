@@ -1,0 +1,28 @@
+{
+  "name": "child-story-studio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "儿童绘本故事 - 手绘描边动画 - 小红书竖屏 3:4",
+  "scripts": {
+    "dev": "remotion studio",
+    "render": "remotion render",
+    "still": "remotion still",
+    "precheck": "node scripts/precheck.js",
+    "check:props": "node scripts/check_props.js",
+    "check:mask": "node scripts/check_mask.js",
+    "check:gap": "python scripts/check_gap.py",
+    "sheet": "python scripts/contact_sheet.py"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.409",
+    "@remotion/google-fonts": "4.0.409",
+    "@remotion/transitions": "4.0.409",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "remotion": "4.0.409"
+  },
+  "devDependencies": {
+    "@types/react": "19.0.0",
+    "typescript": "5.7.3"
+  }
+}

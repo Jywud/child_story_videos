@@ -1,0 +1,27 @@
+{
+  "_doc": "道具状态表：防连续性穿帮。check_props.js 校验每张图的道具登记与翻转合法性。",
+  "_states": {
+    "yes": "道具在画面里看得见",
+    "no": "画面里明确没有该道具",
+    "hidden": "构图看不到（如特写/梦境），连续性检查跳过"
+  },
+  "_rules": [
+    "状态只能按 allowChangeAt 登记的幕翻转，否则报「连续性断裂」",
+    "可逆状态（开/关、有/无）用 yes/no 两态，不要用枚举（枚举强制单调）",
+    "角色类道具 textClause:false",
+    "title/moral/interact 卡片幕自动豁免检查"
+  ],
+  "props": {
+    "hat": {
+      "desc": "示例：主角的帽子（米色草编帽，素净没有任何文字图案）",
+      "textClause": false
+    }
+  },
+  "allowChangeAt": [
+    { "scene": 2, "why": "示例：帽子在第二幕戴上（no→yes）" }
+  ],
+  "images": {
+    "hook.jpg": { "hat": "no" },
+    "s2.jpg": { "hat": "yes" }
+  }
+}

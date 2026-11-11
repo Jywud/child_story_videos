@@ -1,0 +1,21 @@
+# 生成内容与可再生大文件
+node_modules/
+output/
+tmp/
+tmp-imgs/
+_gen/
+*.log
+.DS_Store
+
+# 素材（图+配音）不入库——创作者自己生成
+public/assets/*
+!public/assets/_sfx/
+
+# 已发布的 24 集分镜数据（内容不入库，框架才入库）
+src/stories/*
+!src/stories/_sfx-template/
+!src/stories/_template-example/
+
+# 会话/工具缓存
+.workbuddy/
+.designkit-history-delivery/
