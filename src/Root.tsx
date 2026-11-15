@@ -144,6 +144,18 @@ import {
   COVER as COVER_BA,
   STORY as STORY_BA,
 } from "./stories/hui-shuo-xie-xie-de-xiao-la-ba/constants";
+import { StoryVideo as StoryVideoXue2 } from "./stories/ti-sheng-dan-lao-ren-zhi-ban-de-xiao-xue-ren/Video";
+import { StoryCover as StoryCoverXue2 } from "./stories/ti-sheng-dan-lao-ren-zhi-ban-de-xiao-xue-ren/Cover";
+import {
+  COVER as COVER_XUE2,
+  STORY as STORY_XUE2,
+} from "./stories/ti-sheng-dan-lao-ren-zhi-ban-de-xiao-xue-ren/constants";
+import { StoryVideo as StoryVideoShu } from "./stories/shu-jiu-ge-de-xiao-shou-wei/Video";
+import { StoryCover as StoryCoverShu } from "./stories/shu-jiu-ge-de-xiao-shou-wei/Cover";
+import {
+  COVER as COVER_SHU,
+  STORY as STORY_SHU,
+} from "./stories/shu-jiu-ge-de-xiao-shou-wei/constants";
 import { timelineDuration } from "./lib/timeline";
 import { loadDisplayFont } from "./lib/fonts";
 import { FPS, H, W } from "./theme";
@@ -573,6 +585,40 @@ export const RemotionRoot: React.FC = () => {
         width={W}
         height={H}
         defaultProps={{ cover: COVER_BA }}
+      />
+
+      <Composition
+        id={STORY_XUE2.id}
+        component={StoryVideoXue2}
+        durationInFrames={timelineDuration(STORY_XUE2.scenes)}
+        fps={FPS}
+        width={W}
+        height={H}
+        defaultProps={{ story: STORY_XUE2 }}
+      />
+      <Still
+        id={COVER_XUE2.id}
+        component={StoryCoverXue2}
+        width={W}
+        height={H}
+        defaultProps={{ cover: COVER_XUE2 }}
+      />
+
+      <Composition
+        id={STORY_SHU.id}
+        component={StoryVideoShu}
+        durationInFrames={timelineDuration(STORY_SHU.scenes)}
+        fps={FPS}
+        width={W}
+        height={H}
+        defaultProps={{ story: STORY_SHU }}
+      />
+      <Still
+        id={COVER_SHU.id}
+        component={StoryCoverShu}
+        width={W}
+        height={H}
+        defaultProps={{ cover: COVER_SHU }}
       />
     </>
   );
