@@ -418,17 +418,11 @@ export const BookCaption: React.FC<{
   // 两档错位：左、右交替（2 行内仍保持错落感）
   const offsets = [0, 24];
 
-  // 长句强制二分：整句超 22 字时在破折号/语义中点拆开（两行大字比单行小字易读）
-  if (chunks.length === 1 && chunks[0].length > 22) {
-    const long = chunks[0];
-    let cut = long.lastIndexOf('——');
-    if (cut <= 0 || cut > long.length - 4) cut = Math.floor(long.length / 2);
-    else cut += 2;
-    chunks.splice(0, chunks.length, long.slice(0, cut), long.slice(cut));
-  }
-  // 词块按字数贪心均分成 2 行，每行不超过一行容量
+  // 纯贪心装行（2026-11-18 终版）：chunks 逐个装入，装不下换行；超长 chunk 硬拆
+  // 字号按最长行自适应，保证任何行都不溢出
   const MAX_W = 940;
-  const maxCharsPerLine = Math.floor(MAX_W / 58); // 56px 字号 + 2px 余量
+  const CHAR_W = 58; // 56px 字号 + 2px 余量
+  const maxCharsPerLine = Math.floor(MAX_W / CHAR_W); // ≈16 字
   const safeChunks: string[] = [];
   chunks.forEach((c) => {
     if (c.length <= maxCharsPerLine) {
@@ -439,31 +433,22 @@ export const BookCaption: React.FC<{
       }
     }
   });
+  const rows: string[][] = [[]];
+  safeChunks.forEach((c) => {
+    const cur = rows[rows.length - 1];
+    if (cur.join("").length + c.length <= maxCharsPerLine) {
+      cur.push(c);
+    } else {
+      rows.push([c]);
+    }
+  });
   const lines: { chunks: string[]; startIdx: number }[] = [];
-  if (safeChunks.length <= 2) {
-    lines.push({ chunks: safeChunks, startIdx: 0 });
-  } else {
-    // 超 2 行：按字数均分成 2 行（每行可能略超，靠字号自适应缩小兜底）
-    const total = safeChunks.reduce((a, c) => a + c.length, 0);
-    const half = total / 2;
-    let acc = 0;
-    let best = 1;
-    for (let i = 0; i < safeChunks.length; i++) {
-      acc += safeChunks[i].length;
-      best = i + 1;
-      if (acc >= half) break;
-    }
-    // 行宽校验：第一行超限时把均分点前移（第二行可能变长，靠下方再拆兜底）
-    while (
-      best > 1 &&
-      safeChunks.slice(0, best).join("").length > maxCharsPerLine
-    ) {
-      best--;
-    }
-    lines.push({ chunks: safeChunks.slice(0, best), startIdx: 0 });
-    lines.push({ chunks: safeChunks.slice(best), startIdx: best });
-  }
-  // 字号自适应：按最长行缩放，基准 52px（热词冷字同大，白字黑边）
+  let startIdx = 0;
+  rows.forEach((row) => {
+    lines.push({ chunks: row, startIdx });
+    startIdx += row.join("").length;
+  });
+  // 字号自适应：按最长行缩放，上限 62px，下限 34px
   const maxLineLen = Math.max(...lines.map((l) => l.chunks.join("").length));
   const fontSize = Math.max(34, Math.min(62, Math.floor(MAX_W / (maxLineLen + 3))));
   const hotSize = fontSize;
