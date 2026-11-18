@@ -453,6 +453,13 @@ export const BookCaption: React.FC<{
       best = i + 1;
       if (acc >= half) break;
     }
+    // 行宽校验：第一行超限时把均分点前移（第二行可能变长，靠下方再拆兜底）
+    while (
+      best > 1 &&
+      safeChunks.slice(0, best).join("").length > maxCharsPerLine
+    ) {
+      best--;
+    }
     lines.push({ chunks: safeChunks.slice(0, best), startIdx: 0 });
     lines.push({ chunks: safeChunks.slice(best), startIdx: best });
   }
