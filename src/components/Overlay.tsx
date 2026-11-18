@@ -315,6 +315,15 @@ export const BottomCaption: React.FC<{ text: string; frame: number }> = ({
     .split(/(?<=[，。！？……：；])/)
     .map((s) => s.trim())
     .filter(Boolean);
+  // 长句强制二分：分句后只有 1 行且超过一行容量（约 22 字）时，
+  // 在破折号等语义停顿处拆成 2 行（大字两行比单行小字更易读）
+  if (parts.length === 1 && parts[0].length > 22) {
+    const long = parts[0];
+    let cut = long.lastIndexOf('——');
+    if (cut <= 0 || cut > long.length - 4) cut = Math.floor(long.length / 2);
+    else cut += 2; // 破折号归前行
+    parts.splice(0, parts.length, long.slice(0, cut), long.slice(cut));
+  }
   let lines: string[];
   if (parts.length <= 1) {
     lines = parts.length ? parts : [text];
@@ -341,7 +350,7 @@ export const BottomCaption: React.FC<{ text: string; frame: number }> = ({
   const MAX_W = 940; // 1080 - 左右 70
   const fontSize = Math.max(
     30,
-    Math.min(56, Math.floor(MAX_W / Math.max(...lines.map((l) => l.length)))),
+    Math.min(56, Math.floor(MAX_W / Math.max(...lines.map((l) => l.length + 3)))),
   );
   return (
     <>
@@ -409,34 +418,49 @@ export const BookCaption: React.FC<{
   // 两档错位：左、右交替（2 行内仍保持错落感）
   const offsets = [0, 24];
 
-  // 词块两两合并成行（贪心：尽量均分），保证同屏最多 2 行
+  // 长句强制二分：整句超 22 字时在破折号/语义中点拆开（两行大字比单行小字易读）
+  if (chunks.length === 1 && chunks[0].length > 22) {
+    const long = chunks[0];
+    let cut = long.lastIndexOf('——');
+    if (cut <= 0 || cut > long.length - 4) cut = Math.floor(long.length / 2);
+    else cut += 2;
+    chunks.splice(0, chunks.length, long.slice(0, cut), long.slice(cut));
+  }
+  // 词块按字数贪心均分成 2 行，每行不超过一行容量
+  const MAX_W = 940;
+  const maxCharsPerLine = Math.floor(MAX_W / 58); // 56px 字号 + 2px 余量
+  const safeChunks: string[] = [];
+  chunks.forEach((c) => {
+    if (c.length <= maxCharsPerLine) {
+      safeChunks.push(c);
+    } else {
+      for (let i = 0; i < c.length; i += maxCharsPerLine) {
+        safeChunks.push(c.slice(i, i + maxCharsPerLine));
+      }
+    }
+  });
   const lines: { chunks: string[]; startIdx: number }[] = [];
-  if (chunks.length <= 2) {
-    lines.push({ chunks, startIdx: 0 });
+  if (safeChunks.length <= 2) {
+    lines.push({ chunks: safeChunks, startIdx: 0 });
   } else {
-    const total = chunks.reduce((a, c) => a + c.length, 0);
+    // 超 2 行：按字数均分成 2 行（每行可能略超，靠字号自适应缩小兜底）
+    const total = safeChunks.reduce((a, c) => a + c.length, 0);
+    const half = total / 2;
     let acc = 0;
     let best = 1;
-    let bestDiff = Infinity;
-    chunks.forEach((c, i) => {
-      acc += c.length;
-      if (i < chunks.length - 1) {
-        const diff = Math.abs(acc - total / 2);
-        if (diff < bestDiff) {
-          bestDiff = diff;
-          best = i + 1;
-        }
-      }
-    });
-    lines.push({ chunks: chunks.slice(0, best), startIdx: 0 });
-    lines.push({ chunks: chunks.slice(best), startIdx: best });
+    for (let i = 0; i < safeChunks.length; i++) {
+      acc += safeChunks[i].length;
+      best = i + 1;
+      if (acc >= half) break;
+    }
+    lines.push({ chunks: safeChunks.slice(0, best), startIdx: 0 });
+    lines.push({ chunks: safeChunks.slice(best), startIdx: best });
   }
-  // 字号自适应：最长行铺满可用宽度即止
+  // 字号自适应：按最长行缩放，基准 52px（热词冷字同大，白字黑边）
   const maxLineLen = Math.max(...lines.map((l) => l.chunks.join("").length));
-  const MAX_W = 940;
-  const scale = Math.min(1, MAX_W / (maxLineLen * 52)); // 基准热词 52px
-  const hotSize = Math.max(30, Math.floor(52 * scale));
-  const baseSize = Math.max(26, Math.floor(44 * scale));
+  const fontSize = Math.max(34, Math.min(62, Math.floor(MAX_W / (maxLineLen + 3))));
+  const hotSize = fontSize;
+  const baseSize = fontSize;
 
   return (
     <AbsoluteFill
@@ -475,8 +499,8 @@ export const BookCaption: React.FC<{
                       fontSize: isHot ? hotSize : baseSize,
                       lineHeight: 1.5,
                       letterSpacing: 3,
-                      fontWeight: isHot ? 700 : 400,
-                      color: isHot ? "#FFB03A" : "#FFFDF2",
+                      fontWeight: 700,
+                      color: "#FFFDF2", // 统一白字（2026-11-18 用户要求：不用橘色）
                       WebkitTextStroke: "5.5px rgba(30,26,20,0.72)",
                       paintOrder: "stroke fill",
                       textShadow:
