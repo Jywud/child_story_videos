@@ -168,6 +168,12 @@ import {
   COVER as COVER_TAIYANG,
   STORY as STORY_TAIYANG,
 } from "./stories/shou-xin-de-xiao-tai-yang/constants";
+import { StoryVideo as StoryVideoMeiguanxi } from "./stories/mei-guan-xi-wo-wan-yi-dian-shuo/Video";
+import { StoryCover as StoryCoverMeiguanxi } from "./stories/mei-guan-xi-wo-wan-yi-dian-shuo/Cover";
+import {
+  COVER as COVER_MEIGUANXI,
+  STORY as STORY_MEIGUANXI,
+} from "./stories/mei-guan-xi-wo-wan-yi-dian-shuo/constants";
 import { timelineDuration } from "./lib/timeline";
 import { loadDisplayFont } from "./lib/fonts";
 import { FPS, H, W } from "./theme";
@@ -664,6 +670,22 @@ export const RemotionRoot: React.FC = () => {
         width={W}
         height={H}
         defaultProps={{ cover: COVER_TAIYANG }}
+      />
+      <Composition
+        id={STORY_MEIGUANXI.id}
+        component={StoryVideoMeiguanxi}
+        durationInFrames={timelineDuration(STORY_MEIGUANXI.scenes)}
+        fps={FPS}
+        width={W}
+        height={H}
+        defaultProps={{ story: STORY_MEIGUANXI }}
+      />
+      <Still
+        id={COVER_MEIGUANXI.id}
+        component={StoryCoverMeiguanxi}
+        width={W}
+        height={H}
+        defaultProps={{ cover: COVER_MEIGUANXI }}
       />
     </>
   );
