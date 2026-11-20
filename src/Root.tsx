@@ -156,6 +156,18 @@ import {
   COVER as COVER_SHU,
   STORY as STORY_SHU,
 } from "./stories/shu-jiu-ge-de-xiao-shou-wei/constants";
+import { StoryVideo as StoryVideoXnh } from "./stories/xin-nian-di-yi-pian-xue-hua/Video";
+import { StoryCover as StoryCoverXnh } from "./stories/xin-nian-di-yi-pian-xue-hua/Cover";
+import {
+  COVER as COVER_XNH,
+  STORY as STORY_XNH,
+} from "./stories/xin-nian-di-yi-pian-xue-hua/constants";
+import { StoryVideo as StoryVideoTaiyang } from "./stories/shou-xin-de-xiao-tai-yang/Video";
+import { StoryCover as StoryCoverTaiyang } from "./stories/shou-xin-de-xiao-tai-yang/Cover";
+import {
+  COVER as COVER_TAIYANG,
+  STORY as STORY_TAIYANG,
+} from "./stories/shou-xin-de-xiao-tai-yang/constants";
 import { timelineDuration } from "./lib/timeline";
 import { loadDisplayFont } from "./lib/fonts";
 import { FPS, H, W } from "./theme";
@@ -619,6 +631,39 @@ export const RemotionRoot: React.FC = () => {
         width={W}
         height={H}
         defaultProps={{ cover: COVER_SHU }}
+      />
+
+      <Composition
+        id={STORY_XNH.id}
+        component={StoryVideoXnh}
+        durationInFrames={timelineDuration(STORY_XNH.scenes)}
+        fps={FPS}
+        width={W}
+        height={H}
+        defaultProps={{ story: STORY_XNH }}
+      />
+      <Still
+        id={COVER_XNH.id}
+        component={StoryCoverXnh}
+        width={W}
+        height={H}
+        defaultProps={{ cover: COVER_XNH }}
+      />
+      <Composition
+        id={STORY_TAIYANG.id}
+        component={StoryVideoTaiyang}
+        durationInFrames={timelineDuration(STORY_TAIYANG.scenes)}
+        fps={FPS}
+        width={W}
+        height={H}
+        defaultProps={{ story: STORY_TAIYANG }}
+      />
+      <Still
+        id={COVER_TAIYANG.id}
+        component={StoryCoverTaiyang}
+        width={W}
+        height={H}
+        defaultProps={{ cover: COVER_TAIYANG }}
       />
     </>
   );
