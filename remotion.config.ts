@@ -1,4 +1,5 @@
 import { execFileSync } from "node:child_process";
+import fs from "node:fs";
 import path from "node:path";
 import { Config } from "@remotion/cli/config";
 
@@ -18,9 +19,19 @@ import { Config } from "@remotion/cli/config";
  */
 if (!process.env.SKIP_PRECHECK) {
   try {
+    // 从渲染命令参数里找出当前集的 slug（composition id / still id），
+    // 传给 precheck，让风格校验只查正在渲染的这一集（历史集漂移不阻断新渲染）。
+    const storiesDir = path.join(process.cwd(), "src", "stories");
+    const slugs = fs.existsSync(storiesDir) ? fs.readdirSync(storiesDir) : [];
+    // render 的 id 是 <slug>，still（封面）的 id 是 cover-<slug>，两种都要识别
+    const targetSlug = process.argv.slice(2)
+      .map((a) => a.replace(/^cover-/, ""))
+      .find(
+        (a) => slugs.includes(a) && fs.existsSync(path.join(process.cwd(), "public", "assets", a))
+      );
     execFileSync(process.execPath, [
       path.join(process.cwd(), "scripts", "precheck.js"),
-    ], { stdio: "inherit" });
+    ], { stdio: "inherit", env: { ...process.env, PRECHECK_SLUG: targetSlug || "" } });
   } catch {
     throw new Error(
       "预检未通过，已阻止渲染（见上方错误明细）。修复后重试；确需强行渲染请设 SKIP_PRECHECK=1"
