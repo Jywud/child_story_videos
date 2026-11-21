@@ -20,3 +20,6 @@ src/stories/*
 # 会话/工具缓存
 .workbuddy/
 .designkit-history-delivery/
+
+# 封面样张临时入口（一次性对比用，不入正式工程）
+src/_sample/

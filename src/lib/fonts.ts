@@ -1,4 +1,5 @@
 import { DISPLAY_FONT_DATA_URI } from "./displayFontData";
+import { HUANGYOU_FONT_DATA_URI } from "./huangyouFontData";
 
 /**
  * 站酷快乐体（ZCOOL KuaiLe）：圆润、手写感强，比系统圆黑更贴绘本调性。
@@ -15,8 +16,14 @@ import { DISPLAY_FONT_DATA_URI } from "./displayFontData";
  */
 export const FONT_DISPLAY_NAME = "ZCOOL KuaiLe";
 
+/** 封面标题字族（2026-11-21 用户定：童趣圆胖的庆科黄油体） */
+export const FONT_COVER_NAME = "ZCOOL QingKe HuangYou";
+
 /** 主标题字族；加载失败时回退到系统圆黑 */
 export const FONT_DISPLAY = `"${FONT_DISPLAY_NAME}", "Microsoft YaHei", sans-serif`;
+
+/** 封面标题字族；回退到站酷快乐体再到系统圆黑 */
+export const FONT_COVER = `"${FONT_COVER_NAME}", "${FONT_DISPLAY_NAME}", "Microsoft YaHei", sans-serif`;
 
 const LOAD_TIMEOUT_MS = 15000;
 
@@ -52,4 +59,34 @@ export const loadDisplayFont = (): Promise<void> => {
   });
 
   return loading;
+};
+
+let coverLoading: Promise<void> | null = null;
+
+/** 加载封面标题字体（庆科黄油体）。同样不碰 delayRender，由调用方等待。 */
+export const loadCoverFont = (): Promise<void> => {
+  if (coverLoading) return coverLoading;
+  if (typeof document === "undefined" || !("FontFace" in window)) {
+    return Promise.resolve();
+  }
+  const load = (async () => {
+    const face = new FontFace(
+      FONT_COVER_NAME,
+      `url(${HUANGYOU_FONT_DATA_URI})`,
+      { weight: "400", style: "normal" }
+    );
+    document.fonts.add(await face.load());
+  })();
+  coverLoading = Promise.race([
+    load,
+    new Promise<void>((_, reject) =>
+      setTimeout(
+        () => reject(new Error(`封面字体加载超过 ${LOAD_TIMEOUT_MS}ms`)),
+        LOAD_TIMEOUT_MS
+      )
+    ),
+  ]).catch((err) => {
+    console.error("庆科黄油体加载失败，封面回退到站酷快乐体：", err);
+  });
+  return coverLoading;
 };

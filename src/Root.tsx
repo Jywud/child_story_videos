@@ -181,7 +181,7 @@ import {
   STORY as STORY_ZAIDA,
 } from "./stories/zai-da-yi-ci/constants";
 import { timelineDuration } from "./lib/timeline";
-import { loadDisplayFont } from "./lib/fonts";
+import { loadCoverFont, loadDisplayFont } from "./lib/fonts";
 import { FPS, H, W } from "./theme";
 
 /**
@@ -198,8 +198,17 @@ const useDisplayFont = () => {
   }, []);
 };
 
+// 封面标题用庆科黄油体（2026-11-21 用户定），在 useEffect 里注册 delayRender
+const useCoverFont = () => {
+  useEffect(() => {
+    const handle = delayRender("加载封面字体庆科黄油体");
+    loadCoverFont().finally(() => continueRender(handle));
+  }, []);
+};
+
 export const RemotionRoot: React.FC = () => {
   useDisplayFont();
+  useCoverFont();
 
   return (
     <>
