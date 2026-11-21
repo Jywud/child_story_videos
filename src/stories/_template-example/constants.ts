@@ -19,6 +19,13 @@ export type CoverSpec = {
  *
  * 渲染入口：本目录不用注册 Root.tsx（示例不渲染），
  * 你的新集需要复制一集的注册块到 src/Root.tsx。
+ *
+ * 2026-11-21 定标（新集必须遵守）：
+ *  ① 首幕钩子：title/subtitle 用提问式短句，配音第一句短促前置（≤8s），
+ *     画面走全局 HookScene（Ken Burns+标题弹入+柔光斑），底图上部要留干净区。
+ *  ② 封面：融合版式（满幅图+庆科黄油体标题），COVER.image 填上部干净的图。
+ *  ③ 点状音效：关键动作幕配 sfx，loop:false + fadeIn:3 + 音量0.22-0.42。
+ *     木质/碰撞类音效用 scripts/gen_sfx_blocks.py 生成，不加 BGM/持续环境音。
  */
 const A = "_template-example"; // 图片与配音存放于 public/assets/<slug>/
 const BUF = 32;                // 各幕尾部缓冲帧（必须 > FADE_FRAMES=20）
@@ -30,9 +37,9 @@ export const SCENES: Scene[] = [
     audio: `${A}/v1.mp3`,      // 配音路径（edge-tts 生成，见 scripts/gen_voice_voice.py）
     voiceFrames: 46,          // 配音实测帧数（mutagen ceil+1，渲染前必须回填真实值）
     buffer: BUF,
-    variant: "title",          // title=开场标题卡（主标+副标）
-    title: "你的主标题",
-    subtitle: "你的副标题",
+    variant: "title",          // 首幕钩子卡：提问式短句，画面走 HookScene 动效
+    title: "搭不好的塔，",      // 提问式钩子（例），别用平铺陈述
+    subtitle: "还要再搭一次吗？",
     revealFrames: 54,
   },
   {
@@ -43,8 +50,9 @@ export const SCENES: Scene[] = [
     buffer: BUF,
     variant: "bottom",         // bottom=底部字幕条（≤2 行自动断行）
     text: "旁白文案写在这里，跟着配音节奏分段。",
-    // 点状特效音（可选）：loop:false 短促音，不要持续环境音
-    // sfx: { file: "assets/_sfx/chime.mp3", volume: 0.3, loop: false },
+    // 点状特效音（关键动作才配）：loop:false + fadeIn:3，音量0.22-0.42
+    // 木质/碰撞声：scripts/gen_sfx_blocks.py 生成的 block-tap/wobble/crash
+    // sfx: { file: "assets/_sfx/block-tap.mp3", volume: 0.28, loop: false, fadeIn: 3 },
   },
   {
     key: "s3-moral",

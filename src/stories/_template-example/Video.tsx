@@ -9,20 +9,22 @@ import {
 import type { SceneSfx, Story, TimelineScene } from "../../lib/timeline";
 import { FADE_FRAMES } from "../../lib/timeline";
 import { StoryScene } from "../../components/StoryScene";
+import { HookScene } from "../../components/HookScene";
 import { SceneFade } from "../../components/Overlay";
 
 /**
- * 环境音效组件（2026-10-11 新增）：
- * - 低音量铺底/点状混入，带淡入避免突兀（volume callback 渐入）
- * - loop=true（默认）：雨声/虫鸣等持续音效，Audio loop 铺满整幕
- * - loop=false：关门/水花等点状音效，外包 Sequence 限时防拖尾串音
+ * 环境音效组件（2026-10-11 新增，2026-11-21 定标点状规范）：
+ * - 只用 loop=false 的点状音效（关键动作响 1-2 秒），不做持续铺底、不加 BGM。
+ * - fadeIn 默认 3 帧（0.1s）：短促音效要"脆"，20 帧会把"哗啦"变软。
+ * - 音量 0.22-0.42 之间，不盖人声；成片音轨峰值应 <0.8 不削波。
+ * - loop=true 的能力保留（雨声/虫鸣），但用户已定持续环境音不用，勿启用。
  */
 const SceneSfxAudio: React.FC<{ sfx: SceneSfx; duration: number }> = ({
   sfx,
   duration,
 }) => {
   const volume = sfx.volume ?? 0.25;
-  const fadeIn = sfx.fadeIn ?? 20;
+  const fadeIn = sfx.fadeIn ?? 3;
   const loop = sfx.loop !== false;
   const audioEl = (
     <Audio
@@ -75,9 +77,19 @@ export const StoryVideo: React.FC<{ story: Story }> = ({ story }) => {
                 fadeIn={isFirst ? 14 : 0}
                 fadeOut={isLast ? 14 : FADE_FRAMES}
               >
-                {/* 绘本书页腔创意词块字幕，关键词暖橙放大 */}
-                {/* 首幕（钩子卡）启用 Ken Burns 缓慢推近 */}
-                <StoryScene scene={s} badge={story.badge} captionStyle="book" />
+                {isFirst ? (
+                  /* 首幕：黄金3秒钩子——Ken Burns 推近 + 标题弹簧弹入 + 柔光斑微动 */
+                  <HookScene
+                    image={s.image.replace(/^assets\//, "")}
+                    badge={story.badge}
+                    title={s.title ?? ""}
+                    subtitle={s.subtitle ?? ""}
+                    duration={s.duration}
+                  />
+                ) : (
+                  /* 绘本书页腔创意词块字幕，关键词暖橙放大 */
+                  <StoryScene scene={s} badge={story.badge} captionStyle="book" />
+                )}
               </SceneFade>
               {s.audio ? <Audio src={staticFile(`assets/${s.audio}`)} /> : null}
               {/* 环境音效：低音量混入，不盖旁白 */}

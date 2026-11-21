@@ -1,111 +1,99 @@
 import React from "react";
 import { AbsoluteFill, Img, staticFile } from "remotion";
-import {
-  OutlinedHeading,
-  FONT_SUB,
-  fitCoverSize,
-  rainbowCharColor,
-} from "../../components/Overlay";
-import { FONT_TEXT } from "../../theme";
+import { OutlinedHeading, fitCoverSize, FONT_SUB } from "../../components/Overlay";
+import { FONT_COVER } from "../../lib/fonts";
 import type { CoverSpec } from "./constants";
 
 /**
- * 真实绘本封面版式（2026-10-02 更新）：
- * 奶油纸底 + 顶部纸面书名区（文字不压画）+ 内框画芯。
- * 2026-10-01 用户要求：主标统一站酷快乐体、字号缩小 2 号、改彩虹色（3-6 岁风格）。
- *  - 主标字号走 fitCoverSize()，基准从 168 降到 148（长标题进一步自适应缩小）。
- * 2026-10-02 用户要求：单字内渐变看不清（字跨色段被混色），改为**每个字一种实色**。
- *  - 主标走 OutlinedHeading 的 perChar={rainbowCharColor} 逐字上色，整字满饱和。
- *  - 标题直接传字符串（splitGlyphFix 映射表已空，无需拆字）。
- * 2026-10-07（用户指示：版式还原为旧版，文字排版不动）：
- *  - 画芯画法强化：放大画芯主体（河豚），让"气鼓鼓"更抓眼。只动图，不动文字与版式。
- *  - 实现：画芯内套一层放大裁切容器（scale 1.28 + 上移聚焦河豚），河豚脸占比显著提高。
+ * 融合版封面（2026-11-21 用户定标，全系列新集通用）：
+ *   插画满幅铺底 + 标题压在画面上部干净区 + 钩子副标 + 右上胶囊角标。
+ *   文字与画面融为一体，不用色块/画芯框分隔（用户明确要的杂志感）。
+ *
+ *   - 主标：庆科黄油体（童趣圆胖，OFL 免费商用）+ 暖金渐变 + 深棕粗描边。
+ *   - 副标：楷体亮奶油 + 深棕细描边，走 COVER.subLines.join("，")。
+ *   - 底图：满幅铺底。⚠ COVER.image 必须填「上部留干净区」的图（出图提示词写
+ *     「画面上部留出较干净区域用于放标题」），否则大标题会压住主角脸或塔顶。
+ *     不要用主体顶到画面上沿的图（如第30集的 s13-stand）。
+ *   - 字体已内联（lib/huangyouFontData.ts），Root.tsx 顶层 useCoverFont() 加载。
  */
-
 export const StoryCover: React.FC<{ cover: CoverSpec }> = ({ cover }) => (
-  <AbsoluteFill
-    style={{
-      background:
-        "radial-gradient(circle at 50% 12%, #FCF6E7 0%, #F5EAD0 58%, #EDDCB8 100%)",
-    }}
-  >
+  <AbsoluteFill style={{ background: "#000" }}>
+    <Img
+      src={staticFile(`assets/${cover.image}`)}
+      style={{
+        position: "absolute",
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+        objectPosition: "50% 50%",
+      }}
+    />
+
+    {/* 主标：压在画面上部干净区（top 5%），庆科黄油体暖金+深棕粗描边 */}
     <div
       style={{
         position: "absolute",
-        inset: 0,
-        padding: "40px 42px 42px",
+        top: "5%",
+        left: 0,
+        right: 0,
         display: "flex",
-        flexDirection: "column",
+        justifyContent: "center",
       }}
     >
-      {/* ── 顶部书名区（在纸面上，不压画） ── */}
-      <div style={{ textAlign: "center" }}>
-        <OutlinedHeading
-          fontSize={fitCoverSize(cover.title)}
-          perChar={rainbowCharColor}
-          stroke="#FFF9EA"
-          strokeWidth={9}
-          halo="drop-shadow(0 4px 10px rgba(90,50,10,0.30))"
-          letterSpacing={10}
-        >
-          {cover.title}
-        </OutlinedHeading>
-
-        {/* 副标一行化：楷体暖棕，像书封上的题记 */}
-        <div
-          style={{
-            marginTop: 16,
-            fontFamily: FONT_SUB,
-            fontSize: 46,
-            color: "#7A4A20",
-            letterSpacing: 5,
-            textShadow:
-              "0 1px 0 rgba(255,252,240,0.9), 0 3px 8px rgba(120,80,30,0.18)",
-          }}
-        >
-          {cover.subLines.join("，")}
-        </div>
-
-        {/* 系列署名行：书脊感的小字 */}
-        <div
-          style={{
-            marginTop: 14,
-            fontFamily: FONT_TEXT,
-            fontSize: 27,
-            fontWeight: 700,
-            color: "#B08D55",
-            letterSpacing: 9,
-          }}
-        >
-          — {cover.badge} —
-        </div>
-      </div>
-
-      {/* ── 画芯：内框圆角插画，像贴在封面上的一幅画 ── */}
-      <div
-        style={{
-          flex: 1,
-          marginTop: 26,
-          position: "relative",
-          borderRadius: 22,
-          overflow: "hidden",
-          border: "5px solid #E3CFA2",
-          boxShadow:
-            "0 12px 30px rgba(96,64,22,0.26), inset 0 0 0 2px rgba(255,250,235,0.9)",
-        }}
+      <OutlinedHeading
+        fontSize={fitCoverSize(cover.title)}
+        fontFamily={FONT_COVER}
+        gradient="linear-gradient(180deg, #FFE9A8 0%, #FFC93C 55%, #F5A623 100%)"
+        stroke="#6B3A12"
+        strokeWidth={15}
+        halo="drop-shadow(0 5px 12px rgba(70,35,8,0.45))"
+        letterSpacing={10}
       >
-        {/* 画芯内放大：聚焦河豚主体（只动图，不动版式文字） */}
-        <Img
-          src={staticFile(`assets/${cover.image}`)}
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            transform: "scale(1.28) translateY(-4%)",
-            transformOrigin: "50% 42%",
-          }}
-        />
-      </div>
+        {cover.title}
+      </OutlinedHeading>
+    </div>
+
+    {/* 钩子副标：楷体亮奶油 + 深棕细描边，主标下方（top 20%） */}
+    <div
+      style={{
+        position: "absolute",
+        top: "20%",
+        left: 0,
+        right: 0,
+        textAlign: "center",
+      }}
+    >
+      <OutlinedHeading
+        fontSize={52}
+        fontFamily={FONT_SUB}
+        gradient="linear-gradient(180deg, #FFFFFF 0%, #FFF4DC 100%)"
+        stroke="#7A461A"
+        strokeWidth={5}
+        halo="drop-shadow(0 3px 8px rgba(70,35,8,0.4))"
+        letterSpacing={3}
+      >
+        {cover.subLines.join("，")}
+      </OutlinedHeading>
+    </div>
+
+    {/* 右上系列角标：半透明奶油底压在画面上 */}
+    <div
+      style={{
+        position: "absolute",
+        top: 32,
+        right: 36,
+        padding: "9px 24px",
+        borderRadius: 999,
+        background: "rgba(255,248,232,0.88)",
+        fontFamily: "Microsoft YaHei",
+        fontSize: 26,
+        fontWeight: 700,
+        color: "#8A5A22",
+        letterSpacing: 2,
+        boxShadow: "0 3px 12px rgba(120,80,30,0.18)",
+      }}
+    >
+      {cover.badge}
     </div>
   </AbsoluteFill>
 );
