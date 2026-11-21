@@ -174,6 +174,12 @@ import {
   COVER as COVER_MEIGUANXI,
   STORY as STORY_MEIGUANXI,
 } from "./stories/mei-guan-xi-wo-wan-yi-dian-shuo/constants";
+import { StoryVideo as StoryVideoZaida } from "./stories/zai-da-yi-ci/Video";
+import { StoryCover as StoryCoverZaida } from "./stories/zai-da-yi-ci/Cover";
+import {
+  COVER as COVER_ZAIDA,
+  STORY as STORY_ZAIDA,
+} from "./stories/zai-da-yi-ci/constants";
 import { timelineDuration } from "./lib/timeline";
 import { loadDisplayFont } from "./lib/fonts";
 import { FPS, H, W } from "./theme";
@@ -686,6 +692,22 @@ export const RemotionRoot: React.FC = () => {
         width={W}
         height={H}
         defaultProps={{ cover: COVER_MEIGUANXI }}
+      />
+      <Composition
+        id={STORY_ZAIDA.id}
+        component={StoryVideoZaida}
+        durationInFrames={timelineDuration(STORY_ZAIDA.scenes)}
+        fps={FPS}
+        width={W}
+        height={H}
+        defaultProps={{ story: STORY_ZAIDA }}
+      />
+      <Still
+        id={COVER_ZAIDA.id}
+        component={StoryCoverZaida}
+        width={W}
+        height={H}
+        defaultProps={{ cover: COVER_ZAIDA }}
       />
     </>
   );
