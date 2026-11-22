@@ -346,11 +346,12 @@ export const BottomCaption: React.FC<{ text: string; frame: number }> = ({
       Boolean,
     );
   }
-  // 字号自适应：最长行铺满可用宽度即止，最小 30px
+  // 字号自适应：最长行铺满可用宽度即止，最小 28px
+  // 2026-11-22 起整体缩小 2px（max 56→54 / min 30→28），新集标配
   const MAX_W = 940; // 1080 - 左右 70
   const fontSize = Math.max(
-    30,
-    Math.min(56, Math.floor(MAX_W / Math.max(...lines.map((l) => l.length + 3)))),
+    28,
+    Math.min(54, Math.floor(MAX_W / Math.max(...lines.map((l) => l.length + 3))) - 2),
   );
   return (
     <>
@@ -448,9 +449,10 @@ export const BookCaption: React.FC<{
     lines.push({ chunks: row, startIdx });
     startIdx += row.join("").length;
   });
-  // 字号自适应：按最长行缩放，上限 62px，下限 34px
+  // 字号自适应：按最长行缩放，上限 60px，下限 32px
+  // 2026-11-22 起整体缩小 2px（max 62→60 / min 34→32），新集标配
   const maxLineLen = Math.max(...lines.map((l) => l.chunks.join("").length));
-  const fontSize = Math.max(34, Math.min(62, Math.floor(MAX_W / (maxLineLen + 3))));
+  const fontSize = Math.max(32, Math.min(60, Math.floor(MAX_W / (maxLineLen + 3)) - 2));
   const hotSize = fontSize;
   const baseSize = fontSize;
 
